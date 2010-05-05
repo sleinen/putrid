@@ -1,0 +1,64 @@
+#!/usr/bin/env python
+
+import getopt, sys, os
+from cloginrc import CloginConfiguration
+from device.generic import *
+
+version = "Putrid 0.0"
+
+def main():
+
+    cloginrc = os.environ.get("HOME") + "/" + ".cloginrc"
+    conf = CloginConfiguration()
+    conf.read_cloginrc(cloginrc)
+
+    def process_device(device_name):
+        device = ManagedDevice(device_name, conf)
+        if debug_level > 0:
+            device.debug = True
+        device.login()
+        for command in device.commands():
+            print device.command_results(command)
+        device.logout()
+
+    def usage():
+        print "Usage: ",sys.argv[0], " [-d|--debug] [-l|--less-debug] [-f filename|--file=filename | router]"
+
+    debug_level = 0
+    filename = None
+    try:
+	opts, args = getopt.getopt(sys.argv[1:],"dlVf:",
+                                   ["debug", "less-debug", "version",
+                                    "file="])
+    except getopt.GetoptError, err:
+        print str(err)
+        usage()
+        sys.exit(1)
+    for opt, arg in opts:
+        if opt in ("-V", "--version"):
+            print "Version: ",version
+            sys.exit(0)
+        elif opt in ("-d", "--debug"):
+            debug_level = 2
+        elif opt in ("-l", "--less-debug"):
+            debug_level = 1
+        elif opt in ("-f", "--file"):
+            filename = arg
+        else:
+            # should have been caught by getopt()
+            # but we check anyway - defensive programming.
+            print "Unknown option ",opt
+            usage()
+            sys.exit(2)
+    if len(args) == 0:
+        if filename == None:
+            print "Too few arguments: host name required"
+            sys.exit(1)
+        else:
+            postprocess_file(filename)
+    else:
+        for arg in args:
+            process_device(arg)
+
+if __name__ == "__main__":
+    main()
