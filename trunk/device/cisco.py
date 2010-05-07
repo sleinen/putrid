@@ -10,8 +10,6 @@ class ManagedDevice(device.generic.ManagedDevice):
     ##
     enable_password_prompt_re = ".*[Pp]assword: ?$"
 
-    def content_type(self):
-        return "cisco"
     def __init__(self, name, conf):
         device.generic.ManagedDevice.__init__(self, name, conf)
         self.width = 80

@@ -12,12 +12,12 @@ def main():
     conf = CloginConfiguration()
     conf.read_cloginrc(cloginrc)
 
-    def process_device(device_name):
-        device = load_device_class('cisco')(device_name, conf)
+    def process_device(device_name, device_type):
+        device = load_device_class(device_type)(device_name, conf)
         if debug_level > 0:
             device.debug = True
         device.login()
-        print "!PUTRID_CONTENT_TYPE:", device.content_type()
+        print "!PUTRID_CONTENT_TYPE:", device_type
         print "!"
         for command_postproc in device.commands():
             for command, postproc in command_postproc.iteritems():
@@ -25,7 +25,7 @@ def main():
         device.logout()
 
     def usage():
-        print "Usage: ",sys.argv[0], " [-d|--debug] [-l|--less-debug] [-f filename|--file=filename | router]"
+        print "Usage: ",sys.argv[0], " [-d|--debug] [-l|--less-debug] [-f filename|--file=filename | router[:type] ...]"
 
     debug_level = 0
     filename = None
@@ -61,7 +61,11 @@ def main():
             postprocess_file(filename)
     else:
         for arg in args:
-            process_device(arg)
+            if ':' in arg:
+                device, devtype = arg.split(':')
+            else:
+                device, devtype = arg, 'cisco'
+            process_device(device, devtype)
 
 if __name__ == "__main__":
     main()

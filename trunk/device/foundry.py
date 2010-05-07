@@ -6,15 +6,13 @@ class ManagedDevice(device.cisco.ManagedDevice):
     """Brocade/Foundry devices are very similar to Cisco IOS devices.
     We override a few methods where the two differ.
     """
-    def content_type(self):
-        return "foundry"
     def set_length_width(self, length, width):
         ## Foundry/Brocade devices don't seem to have "terminal width"
         p = self.process
         p.sendline("terminal length "+str(self.length))
         p.expect(self.fullprompt)
     def commands(self):
-        return ["show version"]
+        return [{"show version": self.pp_show_version}]
     def disable(self):
         self.process.sendline("quit")
         self.enabled = False
