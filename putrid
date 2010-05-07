@@ -2,7 +2,7 @@
 
 import getopt, sys, os
 from cloginrc import CloginConfiguration
-from device.cisco import CiscoDevice
+from device import load_device_class
 
 version = "Putrid 0.0"
 
@@ -13,12 +13,15 @@ def main():
     conf.read_cloginrc(cloginrc)
 
     def process_device(device_name):
-        device = CiscoDevice(device_name, conf)
+        device = load_device_class('cisco')(device_name, conf)
         if debug_level > 0:
             device.debug = True
         device.login()
-        for command in device.commands():
-            print device.command_results(command)
+        print "!PUTRID_CONTENT_TYPE:", device.content_type()
+        print "!"
+        for command_postproc in device.commands():
+            for command, postproc in command_postproc.iteritems():
+                postproc(device.command_results(command))
         device.logout()
 
     def usage():
