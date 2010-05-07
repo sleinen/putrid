@@ -2,7 +2,7 @@
 
 import getopt, sys, os
 from cloginrc import CloginConfiguration
-from device.generic import *
+from device.cisco import CiscoDevice
 
 version = "Putrid 0.0"
 
@@ -13,7 +13,7 @@ def main():
     conf.read_cloginrc(cloginrc)
 
     def process_device(device_name):
-        device = ManagedDevice(device_name, conf)
+        device = CiscoDevice(device_name, conf)
         if debug_level > 0:
             device.debug = True
         device.login()

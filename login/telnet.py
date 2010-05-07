@@ -13,6 +13,3 @@ class TelnetLoginMethod(LoginMethod):
         p.sendline(self.username)
         p.expect("Password: $")
         p.sendline(self.password)
-        p.expect(">$")
-        hostname = p.before.rpartition("\n")[2]
-        device.fullprompt = hostname + "#$"

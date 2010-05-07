@@ -26,6 +26,3 @@ class SshLoginMethod(LoginMethod):
             p.sendline("yes")
             p.expect("password: $")
         p.sendline(self.password)
-        p.expect(">$")
-        hostname = p.before.rpartition("\n")[2]
-        device.fullprompt = hostname + "#$"
