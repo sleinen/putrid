@@ -23,7 +23,10 @@ class ManagedDevice:
         self.enable()
     def command_results(self, command):
         self.process.sendline(command)
+        self.process.expect(command+"$") # echo
         self.process.expect(self.fullprompt)
-        return self.process.before
+        return self.process.before.rstrip("\n")
     def logout(self):
         pass
+    def pseudocomment(self, string):
+        return "\n".join(map(lambda x: "! " + x, string.split("\n")))
